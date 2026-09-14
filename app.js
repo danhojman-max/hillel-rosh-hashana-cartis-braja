@@ -67,6 +67,124 @@ function renderShapeBackground(style) {
 }
 
 // ---------------------------------------------------------
+// 1.1) ZONA SEGURA DE TEXTO (calculada a partir de cada SVG)
+// Para que el mensaje quede siempre dentro de la silueta, sin importar
+// su largo, no usamos un ancho fijo a ojo: analizamos el propio archivo
+// SVG de cada diseño (dibujando en un <canvas> oculto y mirando qué
+// píxeles son opacos) para encontrar la franja horizontal más ancha y
+// continua disponible, y en qué banda vertical del dibujo está. Así,
+// si mañana se agrega o se cambia una silueta, el ancho del texto se
+// recalcula solo — no hace falta volver a medir nada a mano.
+// El resultado se cachea por shapeId (se calcula una sola vez).
+// ---------------------------------------------------------
+const SAFE_ZONE_CACHE = {};
+
+// Valor de respaldo por si algo falla al analizar el SVG (imagen que no
+// carga, etc.) — conservador, para que el texto no se salga igual.
+const SAFE_ZONE_FALLBACK = { widthPct: 50, topPct: 22, heightPct: 56 };
+
+function computeSafeZone(shapeId) {
+  if (SAFE_ZONE_CACHE[shapeId]) return SAFE_ZONE_CACHE[shapeId];
+
+  const promise = new Promise((resolve) => {
+    const img = new Image();
+
+    img.onload = () => {
+      try {
+        // Resolución de muestreo (mantiene la proporción 4:5 de la tarjeta).
+        const W = 120;
+        const H = 150;
+        const canvas = document.createElement("canvas");
+        canvas.width = W;
+        canvas.height = H;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, W, H);
+        const data = ctx.getImageData(0, 0, W, H).data;
+
+        // Ancho de la silueta (en píxeles de muestra) en cada fila.
+        const rowWidths = [];
+        for (let y = 0; y < H; y++) {
+          let minX = -1;
+          let maxX = -1;
+          for (let x = 0; x < W; x++) {
+            const alpha = data[(y * W + x) * 4 + 3];
+            if (alpha > 40) {
+              if (minX === -1) minX = x;
+              maxX = x;
+            }
+          }
+          rowWidths.push(minX === -1 ? 0 : maxX - minX + 1);
+        }
+
+        // Para una altura de banda dada, busca la posición vertical con
+        // el mayor ancho mínimo garantizado en toda esa franja.
+        const bestForHeight = (bandH) => {
+          let bestMinWidth = -1;
+          let bestYStart = 0;
+          for (let yStart = 0; yStart <= H - bandH; yStart += 2) {
+            let minWidth = Infinity;
+            for (let y = yStart; y < yStart + bandH; y++) {
+              minWidth = Math.min(minWidth, rowWidths[y]);
+            }
+            if (minWidth > bestMinWidth) {
+              bestMinWidth = minWidth;
+              bestYStart = yStart;
+            }
+          }
+          return { minWidth: bestMinWidth, yStart: bestYStart };
+        };
+
+        // Estrategia en dos pasos (en vez de maximizar ancho×alto a
+        // ciegas, que a veces elegía una franja apenas más alta pero
+        // mucho más angosta — ej. metida en el tallo de la copa):
+        //   1) Mide el ancho disponible en una franja "base" (suficiente
+        //      para ícono + título + un par de líneas de mensaje).
+        //   2) Prueba franjas cada vez más altas y se queda con la más
+        //      alta que no pierda demasiado ancho respecto a esa base
+        //      — así el mensaje tiene más lugar para varias líneas sin
+        //      caer en una parte angosta de la silueta (la punta de la
+        //      estrella, el tallo de la copa, etc.).
+        const refBandH = Math.round(H * 0.35);
+        const refWidth = bestForHeight(refBandH).minWidth;
+
+        let best = { bandH: refBandH, ...bestForHeight(refBandH) };
+        const maxBandH = Math.round(H * 0.85);
+        for (let bandH = refBandH + 2; bandH <= maxBandH; bandH += 2) {
+          const attempt = bestForHeight(bandH);
+          if (attempt.minWidth >= refWidth * 0.72) {
+            best = { bandH, ...attempt };
+          } else {
+            break; // el ancho ya cayó demasiado, no vale la pena seguir
+          }
+        }
+
+        resolve({
+          // 0.85: un margen de aire para que el texto no toque el borde
+          // justo de la silueta.
+          widthPct: Math.max(30, (best.minWidth / W) * 100 * 0.85),
+          topPct: (best.yStart / H) * 100,
+          heightPct: (best.bandH / H) * 100,
+        });
+      } catch (err) {
+        resolve(SAFE_ZONE_FALLBACK);
+      }
+    };
+
+    img.onerror = () => resolve(SAFE_ZONE_FALLBACK);
+    img.src = `assets/shapes/${shapeId}.svg`;
+  });
+
+  SAFE_ZONE_CACHE[shapeId] = promise;
+  return promise;
+}
+
+// Precalienta el cálculo de las 4 siluetas apenas arranca el sitio,
+// para que ya esté listo cuando el usuario llegue al preview.
+function warmSafeZoneCache() {
+  CARD_STYLES.forEach((style) => computeSafeZone(style.shapeId));
+}
+
+// ---------------------------------------------------------
 // 2) ESTADO DE LA APP
 // ---------------------------------------------------------
 const state = {
@@ -163,11 +281,17 @@ function getMensajeFinal() {
 // ---------------------------------------------------------
 // 6) PASO 4 — RENDER DE LA TARJETA FINAL
 // ---------------------------------------------------------
-function renderCard() {
+async function renderCard() {
   const style = CARD_STYLES.find((s) => s.id === state.selectedStyleId) || CARD_STYLES[0];
   const card = document.getElementById("card-render");
 
   card.style.color = style.text;
+
+  const zone = await computeSafeZone(style.shapeId);
+
+  // Si el usuario ya navegó a otro diseño mientras se calculaba la zona
+  // segura, no pisamos su selección más nueva con esta respuesta vieja.
+  if (state.selectedStyleId !== style.id) return;
 
   const mensaje = getMensajeFinal() || (window.MENSAJES_PREDETERMINADOS || [])[0];
 
@@ -178,18 +302,98 @@ function renderCard() {
   if (para) namesHtml += `Para: ${escapeHtml(para)}<br/>`;
   if (de) namesHtml += `De: ${escapeHtml(de)}`;
 
+  // Centramos el bloque de texto en el punto medio de la franja segura
+  // (en vez de encerrarlo en una caja con esa altura exacta): el ancho
+  // sí queda firmemente limitado a --safe-width, pero el alto se deja
+  // crecer libremente desde ese centro — el ícono y el título suelen
+  // asomar un poco por encima de la silueta hacia el área blanca de la
+  // tarjeta, y eso se ve bien; lo que importa es que el mensaje no se
+  // salga para los costados.
+  const centerPct = zone.topPct + zone.heightPct / 2;
+
   card.innerHTML = `
     ${renderShapeBackground(style)}
-    <div class="card-content">
+    <div
+      class="card-text-zone"
+      style="top:${centerPct}%; --safe-width:${zone.widthPct}%;"
+    >
       <div class="card-icon">${style.icon}</div>
       <div class="card-shana-tova" style="color:${style.accent === style.bg ? style.text : style.accent}">
         Shaná Tová
       </div>
       <div class="card-message">${escapeHtml(mensaje)}</div>
       ${namesHtml ? `<div class="card-names">${namesHtml}</div>` : ""}
-      <div class="card-brand"><span>Hillel Argentina · Rosh Hashaná 5787</span></div>
     </div>
+    <div class="card-brand"><span>Hillel Argentina · Rosh Hashaná 5787</span></div>
   `;
+
+  fitTextZone(card.querySelector(".card-text-zone"), card);
+}
+
+// El ícono y el título pueden asomar un poco por encima de la silueta
+// (hacia el área blanca de la tarjeta) sin que se vea mal — lo único
+// que de verdad tiene que evitarse es que el bloque de texto entero se
+// salga de la tarjeta (tape el logo de arriba o el pie de marca de
+// abajo). Si eso llega a pasar con un mensaje muy largo, achica la
+// tipografía hasta que todo entre en el alto disponible de la tarjeta.
+function fitTextZone(zoneEl, cardEl) {
+  const messageEl = zoneEl.querySelector(".card-message");
+  const titleEl = zoneEl.querySelector(".card-shana-tova");
+  const iconEl = zoneEl.querySelector(".card-icon");
+  if (!messageEl) return;
+
+  // Un margen de aire arriba (que no tape el borde de la tarjeta) y
+  // abajo (que no se pise con el pie de marca).
+  const cardRect = cardEl.getBoundingClientRect();
+  const topMargin = cardRect.height * 0.04;
+  const bottomMargin = cardRect.height * 0.1;
+  const zoneHeight = cardRect.height - topMargin - bottomMargin;
+
+  const contentHeight = () => {
+    const first = zoneEl.firstElementChild.getBoundingClientRect();
+    const last = zoneEl.lastElementChild.getBoundingClientRect();
+    return last.bottom - first.top;
+  };
+  // Los márgenes de estos elementos están en "em" (ver style.css), así
+  // que al achicar el font-size también se achica el aire entre ellos.
+
+  // 1) Primero achica el mensaje (lo más "elástico" en alto), hasta un piso legible.
+  let messageSize = 15;
+  while (contentHeight() > zoneHeight && messageSize > 11) {
+    messageSize -= 1;
+    messageEl.style.fontSize = messageSize + "px";
+  }
+
+  // 2) Si todavía no entra, achica un poco el título.
+  let titleSize = 30;
+  while (contentHeight() > zoneHeight && titleSize > 20 && titleEl) {
+    titleSize -= 2;
+    titleEl.style.fontSize = titleSize + "px";
+  }
+
+  // 3) Si todavía no entra, achica el ícono.
+  let iconSize = 56;
+  while (contentHeight() > zoneHeight && iconSize > 32 && iconEl) {
+    iconSize -= 4;
+    iconEl.style.fontSize = iconSize + "px";
+  }
+
+  // 4) Último recurso — casos extremos (mensaje larguísimo en la
+  // silueta más angosta, con nombres): aunque el CONTENIDO ya entra en
+  // el alto disponible, puede quedar corrido hacia arriba o abajo de
+  // la tarjeta si el centro de la franja segura no está a mitad de
+  // camino entre los márgenes. Se corre el bloque lo justo para que
+  // vuelva a entrar del todo.
+  const topBoundary = cardRect.top + topMargin;
+  const bottomBoundary = cardRect.bottom - bottomMargin;
+  const first = zoneEl.firstElementChild.getBoundingClientRect();
+  const last = zoneEl.lastElementChild.getBoundingClientRect();
+  let nudge = 0;
+  if (first.top < topBoundary) nudge = topBoundary - first.top;
+  else if (last.bottom > bottomBoundary) nudge = bottomBoundary - last.bottom;
+  if (nudge !== 0) {
+    zoneEl.style.transform = `translateY(calc(-50% + ${nudge}px))`;
+  }
 }
 
 function escapeHtml(str) {
@@ -284,8 +488,8 @@ document.addEventListener("click", (e) => {
       goToStep("step-styles");
       break;
     case "go-to-preview":
-      renderCard();
       goToStep("step-preview");
+      renderCard();
       break;
     case "back-to-customize":
       goToStep("step-customize");
@@ -330,3 +534,4 @@ document.getElementById("mensaje-preview-text").addEventListener("input", (e) =>
 // ---------------------------------------------------------
 renderStylesGrid();
 renderMensajeCarousel();
+warmSafeZoneCache();

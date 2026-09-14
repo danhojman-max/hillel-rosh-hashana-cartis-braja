@@ -54,6 +54,15 @@ solo color sólido (sin degradé ni sombra) ocupando ~85-90% del lienzo,
 centrada, con una zona ancha y continua en el medio para que el mensaje
 se lea bien encima.
 
+**No hace falta medir nada a mano.** El sitio analiza cada SVG solo
+(dibujándolo en un `<canvas>` oculto y mirando qué parte es opaca) para
+calcular automáticamente cuál es la franja más ancha disponible y ahí
+ubica el mensaje — ver `computeSafeZone()` en [`app.js`](app.js). Si el
+mensaje es largo, además achica un poco la tipografía para que nunca se
+salga de la silueta. Esto quiere decir que subir una silueta nueva (o
+retocar una existente) no requiere tocar ningún número a mano: el ancho
+del texto se recalcula solo.
+
 ## Cómo agregar o editar un diseño de tarjeta
 
 Los estilos de tarjeta están definidos en el array `CARD_STYLES` al

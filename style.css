@@ -428,24 +428,36 @@ input[type="text"]:focus, textarea:focus {
   position: relative;
 }
 
-.card-content {
-  position: relative;
+/* Contenedor del texto (ícono + título + mensaje + nombres), posicionado
+   y dimensionado en JS (top/height/--safe-width) según la franja más
+   ancha y continua que haya en la silueta de fondo de este diseño —
+   ver computeSafeZone() en app.js. Así el mensaje queda siempre dentro
+   del dibujo, sea cual sea su largo o la forma que tenga la silueta. */
+.card-text-zone {
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* "top" lo pone JS (centro de la franja segura); esto centra el
+     bloque verticalmente sobre ese punto, en vez de encerrarlo en una
+     caja de alto fijo. */
+  transform: translateY(-50%);
   z-index: 1;
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 32px 26px;
+  padding: 0 14px;
+}
+
+.card-text-zone > * {
+  max-width: var(--safe-width, 55%);
 }
 
 .card-icon {
   font-size: 56px;
   line-height: 1;
-  margin-bottom: 16px;
-  display: flex;
-  justify-content: center;
+  margin-bottom: 0.3em;
 }
 
 .card-shana-tova {
@@ -454,14 +466,13 @@ input[type="text"]:focus, textarea:focus {
   text-transform: uppercase;
   font-size: 30px;
   line-height: 1.05;
-  margin-bottom: 18px;
+  margin-bottom: 0.6em;
 }
 
 .card-message {
   font-size: 15px;
-  line-height: 1.5;
-  margin-bottom: 22px;
-  max-width: 100%;
+  line-height: 1.4;
+  margin-bottom: 1.4em;
   word-wrap: break-word;
   white-space: pre-line;
 }
