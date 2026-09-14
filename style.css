@@ -245,9 +245,16 @@ h1, h2, h3 {
   outline: 3px solid var(--marron);
 }
 
-.style-option .style-icon {
-  font-size: 40px;
-  line-height: 1;
+/* Placa circular con la silueta del ícono (usada en la grilla de
+   estilos y en la tarjeta final). El tamaño real se define inline
+   en JS (renderIconBadge) porque cambia según el contexto. */
+.icon-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(59, 36, 32, 0.2);
 }
 
 /* ===================== PASO 3: PERSONALIZAR ===================== */
@@ -333,6 +340,24 @@ input[type="text"]:focus, textarea:focus {
   font-size: 15px;
   line-height: 1.4;
   text-align: center;
+  font-family: var(--font-body);
+  color: var(--marron);
+  border: none;
+  background: transparent;
+  resize: none;
+  padding: 0;
+  min-height: 90px;
+}
+
+.mensaje-preview-text:focus {
+  outline: none;
+}
+
+.mensaje-hint {
+  text-align: center;
+  font-size: 12px;
+  opacity: 0.6;
+  margin: 8px 0 0;
 }
 
 .carousel-arrow {
@@ -391,9 +416,9 @@ input[type="text"]:focus, textarea:focus {
 }
 
 .card-icon {
-  font-size: 64px;
-  margin-bottom: 14px;
-  line-height: 1;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
 }
 
 .card-shana-tova {
@@ -411,6 +436,7 @@ input[type="text"]:focus, textarea:focus {
   margin-bottom: 22px;
   max-width: 100%;
   word-wrap: break-word;
+  white-space: pre-line;
 }
 
 .card-names {

@@ -26,9 +26,7 @@ algunos navegadores bloquean `fetch`/scripts locales bajo ese protocolo.)
 Los mensajes que aparecen en el carrusel "Usar un mensaje predeterminado"
 están en [`content/mensajes.js`](content/mensajes.js). Es un array de
 strings — se puede agregar, borrar o reescribir cualquier línea sin tocar
-el resto del código. **Son textos de ejemplo (placeholders), no textos
-oficiales de Hillel** — hay que reemplazarlos por los definitivos antes del
-evento.
+el resto del código. Actualmente tiene los 5 mensajes definitivos.
 
 ## Dónde van los logos
 
@@ -70,10 +68,18 @@ por si querés ajustar algo después:
   abre `wa.me` con un texto que avisa que hay que adjuntar la imagen
   descargada a mano.
 - **5 diseños de tarjeta** (dentro del rango pedido de 3 a 5): Dulce
-  Comienzo (🍯), Renovación (🍎), Shaná Tová (✡️), Paz y Bendición (🕊️) y
-  Brindis (🍷) — cada uno combina un color sólido de la paleta del poster
-  con un emoji como ícono central, siguiendo la lógica de bloques de color
-  + ícono simple de la referencia visual.
+  Comienzo, Renovación, Shaná Tová, Paz y Bendición y Brindis — cada uno
+  combina un color sólido de la paleta del poster con una placa circular
+  (negra o blanca) que contiene una **silueta plana de un solo color**
+  (SVG hecho a mano, no un emoji de color), siguiendo la lógica de bloques
+  de color + ícono simple de la referencia visual. Los paths están en
+  `ICONS` al principio de `app.js`.
+- **Mensaje predeterminado editable**: el texto que aparece en el
+  carrusel se puede retocar a mano ahí mismo (es un `<textarea>`, no un
+  texto fijo) antes de pasar a la vista previa. Si se navega a otro
+  mensaje del carrusel con las flechas, la edición se pierde y se carga
+  el texto original de ese otro mensaje — evita confusión sobre "qué
+  mensaje es cuál".
 - **Campos "Para" y "De"**: los dejé opcionales (placeholder, no
   obligatorios) porque frenar a alguien con un campo requerido en un flujo
   pensado para ser rápido en el celular iba en contra del objetivo del
