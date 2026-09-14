@@ -32,15 +32,12 @@ evento.
 
 ## Dónde van los logos
 
-Cuando tengas los archivos reales, reemplazá:
-
-- `assets/logo-hillel.png` — logo de Hillel Argentina
-- `assets/logo-masa.png` — logo de Masá (Israel Journey)
-
-Mientras esos archivos no existan, el sitio muestra automáticamente un
-placeholder de texto ("HILLEL ARGENTINA" / "MASA") en vez de un ícono de
-imagen rota, así que no hace falta hacer nada más: simplemente subir los
-PNG con esos nombres exactos en la carpeta `assets/` y listo.
+Los logos ya están cargados en `assets/logo-hillel.png` y
+`assets/logo-masa.png`. Si en algún momento hay que reemplazarlos, alcanza
+con subir un archivo nuevo con el mismo nombre en la carpeta `assets/` — no
+hace falta tocar el código. Si por algún motivo alguno de los dos archivos
+faltara, el sitio muestra automáticamente un placeholder de texto ("HILLEL
+ARGENTINA" / "MASA") en vez de un ícono de imagen rota.
 
 ## Cómo agregar o editar un diseño de tarjeta
 
