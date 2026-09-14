@@ -457,7 +457,7 @@ async function shareCard() {
     const fileName = "cartis-braja-rosh-hashana.png";
     const file = new File([blob], fileName, { type: "image/png" });
 
-    const shareText = "¡Shaná Tová! Te mando esta Cartis Brajá 🍯🍎";
+    const shareText = "¡Shaná Tová! Te mando este Cartis Brajá 🍯🍎";
 
     // Método principal: Web Share API con archivo (funciona en la mayoría
     // de los celulares y abre directamente el selector de apps, incluyendo WhatsApp).
