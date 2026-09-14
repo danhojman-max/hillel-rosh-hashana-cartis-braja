@@ -90,6 +90,15 @@ por si querés ajustar algo después:
   como se pidió.
 - **Librería de imagen**: `html2canvas` vía CDN (cdnjs), sin instalarla
   como dependencia npm, para no necesitar Node/build step.
+- **Siluetas embebidas, no `<img src>`**: la tarjeta final inserta el SVG
+  de la silueta directo en el HTML (texto del archivo, insertado como
+  `<div class="card-shape">{svg}</div>`), en vez de referenciarlo con
+  `<img src="assets/shapes/...svg">`. Safari/iOS tiene un bug conocido
+  donde `html2canvas` no captura bien imágenes SVG externas (la silueta
+  sale en blanco o cortada al exportar, aunque se vea perfecta en
+  pantalla) — insertar el SVG como parte del DOM evita ese problema por
+  completo. La grilla de diseños (paso 2) sí sigue usando `<img>`
+  normal, porque esa pantalla nunca se exporta como imagen.
 - **Compartir**: se intenta primero `navigator.share` con el archivo PNG
   adjunto (funciona en la mayoría de los celulares modernos y abre
   directamente el selector de apps con WhatsApp). Si el navegador no

@@ -61,9 +61,38 @@ const CARD_STYLES = [
 ];
 
 // Arma el fondo con forma (imagen SVG a pantalla completa, detrás del
-// contenido) para un diseño dado.
+// contenido) para un diseño dado. Se usa en la grilla de estilos (paso
+// 2), donde no hace falta que sea perfecto: un <img> normal alcanza.
 function renderShapeBackground(style) {
   return `<img class="card-shape" src="assets/shapes/${style.shapeId}.svg" alt="" />`;
+}
+
+// ---------------------------------------------------------
+// 1.2) SVG DE LA SILUETA, EMBEBIDO (para la tarjeta final)
+// La tarjeta que se exporta como imagen (html2canvas) NO usa <img
+// src="...svg">: en Safari/iOS, html2canvas suele fallar en capturar
+// imágenes SVG externas (la silueta sale en blanco o cortada, aunque
+// la imagen ya haya terminado de cargar). La solución confiable es
+// insertar el SVG directo en el HTML de la tarjeta — html2canvas lo
+// captura sin problema porque ya es parte del DOM, no un recurso
+// aparte que haya que cargar. Se cachea el texto de cada SVG (una sola
+// vez por shapeId) para no volver a pedirlo cada vez que se re-renderiza.
+// ---------------------------------------------------------
+const SHAPE_MARKUP_CACHE = {};
+
+function loadShapeMarkup(shapeId) {
+  if (SHAPE_MARKUP_CACHE[shapeId]) return SHAPE_MARKUP_CACHE[shapeId];
+
+  const promise = fetch(`assets/shapes/${shapeId}.svg`)
+    .then((res) => res.text())
+    .catch(() => "");
+
+  SHAPE_MARKUP_CACHE[shapeId] = promise;
+  return promise;
+}
+
+function warmShapeMarkupCache() {
+  CARD_STYLES.forEach((style) => loadShapeMarkup(style.shapeId));
 }
 
 // ---------------------------------------------------------
@@ -287,7 +316,10 @@ async function renderCard() {
 
   card.style.color = style.text;
 
-  const zone = await computeSafeZone(style.shapeId);
+  const [zone, shapeMarkup] = await Promise.all([
+    computeSafeZone(style.shapeId),
+    loadShapeMarkup(style.shapeId),
+  ]);
 
   // Si el usuario ya navegó a otro diseño mientras se calculaba la zona
   // segura, no pisamos su selección más nueva con esta respuesta vieja.
@@ -312,7 +344,7 @@ async function renderCard() {
   const centerPct = zone.topPct + zone.heightPct / 2;
 
   card.innerHTML = `
-    ${renderShapeBackground(style)}
+    <div class="card-shape">${shapeMarkup}</div>
     <div
       class="card-text-zone"
       style="top:${centerPct}%; --safe-width:${zone.widthPct}%;"
@@ -402,20 +434,6 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-// Espera a que la imagen de la silueta de fondo (.card-shape) haya
-// terminado de cargar. `complete` puede ser true con naturalWidth 0 si
-// la imagen todavía no terminó de decodificarse — por eso se chequean
-// las dos cosas.
-async function ensureShapeImageLoaded(cardEl) {
-  const img = cardEl.querySelector(".card-shape");
-  if (!img) return;
-  if (img.complete && img.naturalWidth > 0) return;
-  await new Promise((resolve) => {
-    img.addEventListener("load", resolve, { once: true });
-    img.addEventListener("error", resolve, { once: true });
-  });
-}
-
 // ---------------------------------------------------------
 // 7) COMPARTIR POR WHATSAPP
 // ---------------------------------------------------------
@@ -427,13 +445,6 @@ async function shareCard() {
 
   try {
     const cardEl = document.getElementById("card-render");
-
-    // La silueta de fondo es una imagen (SVG) que se carga en cuanto se
-    // arma la tarjeta. Si todavía no terminó de cargar cuando html2canvas
-    // saca la captura, sale sin fondo (y con mensajes de texto blanco,
-    // invisible sobre el blanco de la tarjeta) — por eso esperamos a que
-    // esté lista antes de capturar.
-    await ensureShapeImageLoaded(cardEl);
 
     // scale: 2 para que la imagen salga nítida al compartir/descargar.
     const canvas = await html2canvas(cardEl, {
@@ -556,3 +567,4 @@ document.getElementById("mensaje-preview-text").addEventListener("input", (e) =>
 renderStylesGrid();
 renderMensajeCarousel();
 warmSafeZoneCache();
+warmShapeMarkupCache();
