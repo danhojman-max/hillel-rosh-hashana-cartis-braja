@@ -1,0 +1,441 @@
+/* =========================================================
+   Cartis Brajá — Rosh Hashaná 5787 — Hillel Argentina
+   Paleta sacada del poster de referencia:
+   ========================================================= */
+:root {
+  --bordo: #7A1338;
+  --marron: #3B2420;
+  --crema: #F5DDB0;
+  --celeste: #B8D8F0;
+  --dorado: #E8A33D;
+  --blanco: #FFFFFF;
+
+  --radius: 18px;
+  --radius-sm: 12px;
+  --font-title: 'Poppins', 'Montserrat', sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--crema);
+  color: var(--marron);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+img, svg { max-width: 100%; }
+
+h1, h2, h3 {
+  font-family: var(--font-title);
+  font-weight: 800;
+  text-transform: uppercase;
+  margin: 0 0 16px;
+  line-height: 1.1;
+}
+
+/* ===================== HEADER / FOOTER ===================== */
+.site-header {
+  background: var(--marron);
+  padding: 14px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.logos {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo {
+  height: 34px;
+  width: auto;
+  object-fit: contain;
+}
+
+.logo-fallback {
+  color: var(--crema);
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  padding: 6px 10px;
+  border: 2px solid var(--crema);
+  border-radius: 8px;
+}
+
+.site-footer {
+  text-align: center;
+  padding: 24px 16px 32px;
+  font-size: 12px;
+  color: var(--marron);
+  opacity: 0.6;
+}
+
+/* ===================== LAYOUT DE PASOS ===================== */
+#app {
+  flex: 1;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px 20px 40px;
+}
+
+.step {
+  display: none;
+  animation: fadeIn 0.25s ease;
+}
+
+.step.is-active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.step-title {
+  font-size: 22px;
+  text-align: center;
+}
+
+.step-subtitle {
+  text-align: center;
+  margin: -8px 0 20px;
+  opacity: 0.75;
+  font-size: 15px;
+}
+
+/* ===================== PASO 1: INTRO ===================== */
+.intro-card {
+  background: var(--bordo);
+  color: var(--blanco);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+  box-shadow: 0 10px 30px rgba(59, 36, 32, 0.25);
+}
+
+.eyebrow {
+  font-family: var(--font-title);
+  font-weight: 700;
+  color: var(--dorado);
+  letter-spacing: 0.08em;
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+
+.intro-card h1 {
+  font-size: 30px;
+  margin-bottom: 20px;
+}
+
+.intro-text {
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0 0 14px;
+}
+
+.intro-list {
+  margin: 0 0 24px;
+  padding-left: 20px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* ===================== BOTONES ===================== */
+.btn {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 16px;
+  border: none;
+  border-radius: 999px;
+  padding: 16px 24px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  transition: transform 0.1s ease, opacity 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-block {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.btn-primary {
+  background: var(--dorado);
+  color: var(--marron);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--marron);
+  text-transform: none;
+  font-weight: 600;
+  padding: 14px 10px;
+  display: block;
+  margin: 10px auto 0;
+  text-align: center;
+  width: 100%;
+}
+
+.btn-whatsapp {
+  background: #25D366;
+  color: var(--blanco);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.wa-icon {
+  display: inline-flex;
+}
+
+/* ===================== PASO 2: ESTILOS (GRID) ===================== */
+.styles-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.style-option {
+  border: none;
+  border-radius: var(--radius);
+  aspect-ratio: 3 / 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 16px;
+  font-family: var(--font-title);
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 14px;
+  text-align: center;
+  box-shadow: 0 6px 16px rgba(59, 36, 32, 0.15);
+  transition: transform 0.12s ease, outline 0.12s ease;
+  outline: 3px solid transparent;
+}
+
+.style-option:active {
+  transform: scale(0.96);
+}
+
+.style-option.is-selected {
+  outline: 3px solid var(--marron);
+}
+
+.style-option .style-icon {
+  font-size: 40px;
+  line-height: 1;
+}
+
+/* ===================== PASO 3: PERSONALIZAR ===================== */
+.field {
+  display: block;
+  margin-bottom: 18px;
+}
+
+.field-label {
+  display: block;
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 6px;
+  color: var(--marron);
+}
+
+input[type="text"], textarea {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 16px;
+  padding: 14px 16px;
+  border: 2px solid var(--marron);
+  border-radius: var(--radius-sm);
+  background: var(--blanco);
+  color: var(--marron);
+  resize: none;
+}
+
+input[type="text"]:focus, textarea:focus {
+  outline: 2px solid var(--bordo);
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.tab {
+  flex: 1;
+  background: var(--celeste);
+  color: var(--marron);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 12px 8px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-title);
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.tab.is-active {
+  background: var(--bordo);
+  color: var(--blanco);
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.is-active {
+  display: block;
+}
+
+.mensaje-carousel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--blanco);
+  border: 2px solid var(--marron);
+  border-radius: var(--radius-sm);
+  padding: 16px 10px;
+  min-height: 110px;
+}
+
+.mensaje-preview-text {
+  flex: 1;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.carousel-arrow {
+  background: var(--dorado);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--marron);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mensaje-counter {
+  text-align: center;
+  font-size: 12px;
+  opacity: 0.6;
+  margin: 8px 0 0;
+}
+
+.char-count {
+  text-align: right;
+  font-size: 12px;
+  opacity: 0.6;
+  margin: 4px 0 0;
+}
+
+/* ===================== PASO 4: PREVIEW (TARJETA) ===================== */
+.card-render-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+/* La tarjeta que se exporta como imagen. Proporción tipo story/tarjeta
+   vertical, cómoda para compartir por WhatsApp en celular. */
+.card-render {
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px 26px;
+  box-shadow: 0 12px 30px rgba(59, 36, 32, 0.3);
+  position: relative;
+}
+
+.card-icon {
+  font-size: 64px;
+  margin-bottom: 14px;
+  line-height: 1;
+}
+
+.card-shana-tova {
+  font-family: var(--font-title);
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 30px;
+  line-height: 1.05;
+  margin-bottom: 18px;
+}
+
+.card-message {
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 22px;
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+.card-names {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.card-brand {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 0;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  text-transform: uppercase;
+  font-family: var(--font-title);
+  font-weight: 700;
+}
+
+/* ===================== RESPONSIVE (desktop, por si acaso) ===================== */
+@media (min-width: 600px) {
+  #app {
+    padding-top: 40px;
+  }
+}

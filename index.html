@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+  <title>Cartis Brajá — Rosh Hashaná 5787</title>
+  <meta name="description" content="Armá y compartí tu Cartis Brajá para Rosh Hashaná. Hillel Argentina." />
+
+  <!-- Fuente de títulos: Gotham no está disponible como web font gratuita,
+       usamos Poppins (Google Fonts) en sus variantes Bold/Black como reemplazo
+       más parecido. Ver README para más detalle sobre esta decisión. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="site-header">
+    <div class="logos">
+      <!-- TODO: reemplazar con el archivo real del logo -->
+      <img src="assets/logo-hillel.png" alt="Hillel Argentina" class="logo logo-hillel"
+           onerror="this.onerror=null;this.replaceWith(Object.assign(document.createElement('span'),{className:'logo-fallback',textContent:'HILLEL ARGENTINA'}))" />
+      <!-- TODO: reemplazar con el archivo real del logo -->
+      <img src="assets/logo-masa.png" alt="Masá Israel Journey" class="logo logo-masa"
+           onerror="this.onerror=null;this.replaceWith(Object.assign(document.createElement('span'),{className:'logo-fallback',textContent:'MASA'}))" />
+    </div>
+  </header>
+
+  <!-- ===================== CONTENEDOR DE PASOS ===================== -->
+  <!-- El sitio es una sola página: cada "paso" es un <section> que se
+       muestra/oculta por JS (ver app.js). No hay recargas de página. -->
+  <main id="app">
+
+    <!-- PASO 1: INTRO -->
+    <section id="step-intro" class="step is-active">
+      <div class="intro-card">
+        <p class="eyebrow">ROSH HASHANÁ 5787</p>
+        <h1>ALGUIEN TE<br />VINO A LA MENTE</h1>
+        <p class="intro-text">
+          Y si apareció alguien en tu cabeza, quizás no fue casualidad. En Rosh
+          Hashaná tenemos la oportunidad de frenar y desearle algo bueno a las
+          personas que queremos. Elegí a alguien.
+        </p>
+        <p class="intro-text">Puede ser:</p>
+        <ul class="intro-list">
+          <li>alguien que ves todos los días,</li>
+          <li>alguien a quien hace mucho no ves,</li>
+          <li>alguien que te acompañó este año,</li>
+          <li>alguien con quien te gustaría reconectar,</li>
+          <li>o alguien a quien simplemente querés hacer sonreír.</li>
+        </ul>
+        <button class="btn btn-primary btn-block" data-action="go-to-styles">
+          Elegí tu Cartis Brajá
+        </button>
+      </div>
+    </section>
+
+    <!-- PASO 2: ELEGIR ESTILO -->
+    <section id="step-styles" class="step">
+      <h2 class="step-title">Elegí un diseño</h2>
+      <p class="step-subtitle">Tocá la tarjeta que más te guste</p>
+      <div id="styles-grid" class="styles-grid">
+        <!-- Las tarjetas de estilo se generan dinámicamente en app.js -->
+      </div>
+      <button class="btn btn-ghost" data-action="back-to-intro">← Volver</button>
+    </section>
+
+    <!-- PASO 3: PERSONALIZAR -->
+    <section id="step-customize" class="step">
+      <h2 class="step-title">Personalizá tu tarjeta</h2>
+
+      <label class="field">
+        <span class="field-label">Para (opcional)</span>
+        <input type="text" id="input-para" maxlength="40" placeholder="Nombre de quien la recibe" />
+      </label>
+
+      <label class="field">
+        <span class="field-label">De (opcional)</span>
+        <input type="text" id="input-de" maxlength="40" placeholder="Tu nombre" />
+      </label>
+
+      <div class="field">
+        <span class="field-label">Mensaje</span>
+        <div class="tabs" role="tablist">
+          <button type="button" class="tab is-active" id="tab-predeterminado" data-action="tab-predeterminado">
+            Usar un mensaje predeterminado
+          </button>
+          <button type="button" class="tab" id="tab-propio" data-action="tab-propio">
+            Escribir el mío
+          </button>
+        </div>
+
+        <div id="panel-predeterminado" class="tab-panel is-active">
+          <div id="mensaje-carousel" class="mensaje-carousel">
+            <button type="button" class="carousel-arrow" data-action="mensaje-prev" aria-label="Mensaje anterior">‹</button>
+            <p id="mensaje-preview-text" class="mensaje-preview-text"></p>
+            <button type="button" class="carousel-arrow" data-action="mensaje-next" aria-label="Mensaje siguiente">›</button>
+          </div>
+          <p class="mensaje-counter"><span id="mensaje-index">1</span> / <span id="mensaje-total"></span></p>
+        </div>
+
+        <div id="panel-propio" class="tab-panel">
+          <textarea id="input-propio" maxlength="220" rows="5" placeholder="Escribí tu propio mensaje de Shaná Tová..."></textarea>
+          <p class="char-count"><span id="propio-count">0</span> / 220</p>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-block" data-action="go-to-preview">Ver mi tarjeta</button>
+      <button class="btn btn-ghost" data-action="back-to-styles">← Volver</button>
+    </section>
+
+    <!-- PASO 4: PREVIEW + PASO 5: COMPARTIR (misma pantalla) -->
+    <section id="step-preview" class="step">
+      <h2 class="step-title">¡Tu Cartis Brajá está lista!</h2>
+
+      <div class="card-render-wrapper">
+        <!-- Este div es lo que se convierte en imagen (html2canvas).
+             Su contenido se arma dinámicamente en app.js según el estilo
+             e inputs elegidos. -->
+        <div id="card-render" class="card-render"></div>
+      </div>
+
+      <button class="btn btn-whatsapp btn-block" data-action="share-whatsapp">
+        <span class="wa-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.001 2c-5.514 0-9.997 4.478-9.997 9.997 0 1.763.462 3.484 1.34 5.002L2 22l5.117-1.334a9.965 9.965 0 0 0 4.884 1.28h.004c5.514 0 9.996-4.478 9.996-9.997 0-2.67-1.04-5.18-2.929-7.07A9.935 9.935 0 0 0 12.001 2zm5.85 15.847a8.276 8.276 0 0 1-5.85 2.424h-.003a8.29 8.29 0 0 1-4.223-1.157l-.303-.18-3.037.792.812-2.96-.198-.304a8.267 8.267 0 0 1-1.269-4.42c0-4.568 3.72-8.287 8.294-8.287a8.24 8.24 0 0 1 5.865 2.43 8.227 8.227 0 0 1 2.425 5.863c0 4.568-3.72 8.287-8.293 8.287z"/></svg>
+        </span>
+        Enviar por WhatsApp
+      </button>
+      <button class="btn btn-ghost" data-action="back-to-customize">← Editar tarjeta</button>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>Hillel Argentina — Rosh Hashaná 5787</p>
+  </footer>
+
+  <!-- html2canvas: convierte el div de la tarjeta en una imagen PNG -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <script src="content/mensajes.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
