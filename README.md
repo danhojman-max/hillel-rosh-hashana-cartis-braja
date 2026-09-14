@@ -68,12 +68,13 @@ por si querés ajustar algo después:
   abre `wa.me` con un texto que avisa que hay que adjuntar la imagen
   descargada a mano.
 - **5 diseños de tarjeta** (dentro del rango pedido de 3 a 5): Dulce
-  Comienzo, Renovación, Shaná Tová, Paz y Bendición y Brindis — cada uno
-  combina un color sólido de la paleta del poster con una placa circular
-  (negra o blanca) que contiene una **silueta plana de un solo color**
-  (SVG hecho a mano, no un emoji de color), siguiendo la lógica de bloques
-  de color + ícono simple de la referencia visual. Los paths están en
-  `ICONS` al principio de `app.js`.
+  Comienzo, Renovación, Shaná Tová, Paz y Bendición y Brindis. El emoji de
+  cada diseño se muestra tal cual (sin modificar), y lo que cambia es el
+  **fondo de la tarjeta**: en vez de ser un rectángulo plano de color, es
+  una silueta SVG hecha a mano con la forma del emoji (ej. la tarjeta
+  "Shaná Tová" tiene un fondo con forma de Maguen David), rellena con el
+  color sólido del diseño. Las formas están en `SHAPES` al principio de
+  `app.js`.
 - **Mensaje predeterminado editable**: el texto que aparece en el
   carrusel se puede retocar a mano ahí mismo (es un `<textarea>`, no un
   texto fijo) antes de pasar a la vista previa. Si se navega a otro

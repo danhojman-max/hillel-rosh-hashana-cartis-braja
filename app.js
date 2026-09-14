@@ -6,57 +6,59 @@
 // =========================================================
 
 // ---------------------------------------------------------
-// 1) ÍCONOS (siluetas planas en SVG)
-// En vez de usar el emoji de color directo, cada diseño muestra una
-// silueta simple de un solo color (como los íconos del poster de
-// referencia: shofar, estrella de David, etc.), dentro de una placa
-// circular negra o blanca. Los paths son deliberadamente simples.
+// 1) SILUETAS DE FONDO (SVG)
+// En vez de un fondo rectangular plano, cada diseño recorta su color
+// plano con la silueta del emoji que usa (ej: la tarjeta "Shaná Tová"
+// tiene un fondo con forma de Maguen David). El emoji de color va
+// arriba, tal cual un emoji normal. viewBox 0 0 240 300 (proporción
+// 4:5, igual a la tarjeta) para que la silueta ocupe casi toda la
+// tarjeta.
 // ---------------------------------------------------------
-const ICONS = {
+const SHAPES = {
   honey: `
-    <rect x="70" y="75" width="60" height="105" rx="16"/>
-    <rect x="65" y="55" width="70" height="24" rx="8"/>
-    <rect x="90" y="34" width="20" height="23" rx="6"/>
-    <path d="M148,148 Q160,165 148,182 Q136,165 148,148 Z"/>
+    <rect x="50" y="95" width="140" height="190" rx="28"/>
+    <rect x="100" y="35" width="40" height="65" rx="10"/>
   `,
   apple: `
-    <ellipse cx="100" cy="128" rx="50" ry="52"/>
-    <rect x="94" y="54" width="12" height="28" rx="5"/>
-    <path d="M106,64 Q134,52 140,74 Q116,80 106,64 Z"/>
+    <ellipse cx="120" cy="175" rx="95" ry="105"/>
+    <rect x="112" y="15" width="16" height="50" rx="6"/>
+    <path d="M128,28 Q168,15 178,42 Q145,50 128,28 Z"/>
   `,
   star: `
-    <polygon points="100,32 165,152 35,152"/>
-    <polygon points="100,196 35,76 165,76"/>
+    <polygon points="120,15 226,205 14,205"/>
+    <polygon points="120,285 14,95 226,95"/>
   `,
   dove: `
-    <path d="M20,110 C45,70 75,65 100,96 C125,65 155,70 180,110 C155,92 125,96 100,132 C75,96 45,92 20,110 Z"/>
-    <ellipse cx="170" cy="98" rx="11" ry="4.5" transform="rotate(-35 170 98)"/>
+    <ellipse cx="72" cy="98" rx="78" ry="46" transform="rotate(-38 72 98)"/>
+    <ellipse cx="168" cy="98" rx="78" ry="46" transform="rotate(38 168 98)"/>
+    <ellipse cx="120" cy="200" rx="28" ry="90"/>
+    <circle cx="120" cy="108" r="21"/>
+    <polygon points="138,102 158,108 138,116"/>
+    <ellipse cx="150" cy="78" rx="15" ry="6.5" transform="rotate(-30 150 78)"/>
   `,
   wine: `
-    <path d="M68,38 H132 L116,112 Q100,124 84,112 Z"/>
-    <rect x="96" y="112" width="8" height="52" />
-    <ellipse cx="100" cy="168" rx="32" ry="9"/>
+    <path d="M55,20 H185 L150,175 Q120,195 90,175 Z"/>
+    <rect x="112" y="175" width="16" height="75" rx="4"/>
+    <ellipse cx="120" cy="270" rx="55" ry="15"/>
   `,
 };
 
 // ---------------------------------------------------------
 // 2) DISEÑOS DE TARJETA
-// Combinan colores de la paleta del poster + una placa con silueta.
+// Combinan colores de la paleta del poster + una silueta de fondo.
 // Para agregar/quitar un diseño, solo hay que editar este array.
-//   - bg / text: fondo y color de texto de la tarjeta.
-//   - badgeBg: fondo de la placa del ícono (negro o blanco, como en
-//     el poster de referencia).
-//   - iconId: referencia a ICONS.
-//   - iconColor: color plano (silueta) del ícono.
+//   - icon: el emoji tal cual se muestra (sin tocar).
+//   - shapeId: referencia a SHAPES — la forma que recorta el color de
+//     fondo (`bg`).
+//   - text: color del texto sobre esa silueta.
 //   - accent: color del título "Shaná Tová".
 // ---------------------------------------------------------
 const CARD_STYLES = [
   {
     id: "dulce",
     label: "Dulce Comienzo",
-    iconId: "honey",
-    badgeBg: "#FFFFFF",
-    iconColor: "#C97F1D",
+    icon: "🍯",
+    shapeId: "honey",
     bg: "#F5DDB0",
     text: "#3B2420",
     accent: "#7A1338",
@@ -64,9 +66,8 @@ const CARD_STYLES = [
   {
     id: "renovacion",
     label: "Renovación",
-    iconId: "apple",
-    badgeBg: "#FFFFFF",
-    iconColor: "#C0392B",
+    icon: "🍎",
+    shapeId: "apple",
     bg: "#7A1338",
     text: "#FFFFFF",
     accent: "#E8A33D",
@@ -74,9 +75,8 @@ const CARD_STYLES = [
   {
     id: "shana-tova",
     label: "Shaná Tová",
-    iconId: "star",
-    badgeBg: "#000000",
-    iconColor: "#E8A33D",
+    icon: "✡️",
+    shapeId: "star",
     bg: "#3B2420",
     text: "#F5DDB0",
     accent: "#E8A33D",
@@ -84,9 +84,8 @@ const CARD_STYLES = [
   {
     id: "paz",
     label: "Paz y Bendición",
-    iconId: "dove",
-    badgeBg: "#000000",
-    iconColor: "#FFFFFF",
+    icon: "🕊️",
+    shapeId: "dove",
     bg: "#B8D8F0",
     text: "#3B2420",
     accent: "#7A1338",
@@ -94,24 +93,21 @@ const CARD_STYLES = [
   {
     id: "brindis",
     label: "Brindis",
-    iconId: "wine",
-    badgeBg: "#FFFFFF",
-    iconColor: "#7A1338",
+    icon: "🍷",
+    shapeId: "wine",
     bg: "#E8A33D",
     text: "#3B2420",
     accent: "#7A1338",
   },
 ];
 
-// Arma el HTML de una placa de ícono (círculo + silueta SVG) para un
-// diseño dado. `size` es el diámetro en px.
-function renderIconBadge(style, size) {
+// Arma el fondo con forma (SVG a pantalla completa, detrás del
+// contenido) para un diseño dado.
+function renderShapeBackground(style) {
   return `
-    <span class="icon-badge" style="width:${size}px;height:${size}px;background:${style.badgeBg}">
-      <svg viewBox="0 0 200 200" style="width:${size * 0.62}px;height:${size * 0.62}px;fill:${style.iconColor}">
-        ${ICONS[style.iconId]}
-      </svg>
-    </span>
+    <svg class="card-shape" viewBox="0 0 240 300" preserveAspectRatio="none" style="fill:${style.bg}">
+      ${SHAPES[style.shapeId]}
+    </svg>
   `;
 }
 
@@ -152,13 +148,15 @@ function renderStylesGrid() {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "style-option";
-    btn.style.background = style.bg;
     btn.style.color = style.text;
     if (style.id === state.selectedStyleId) btn.classList.add("is-selected");
 
     btn.innerHTML = `
-      ${renderIconBadge(style, 64)}
-      <span>${style.label}</span>
+      ${renderShapeBackground(style)}
+      <span class="style-option-content">
+        <span class="style-icon">${style.icon}</span>
+        <span>${style.label}</span>
+      </span>
     `;
 
     btn.addEventListener("click", () => {
@@ -214,7 +212,6 @@ function renderCard() {
   const style = CARD_STYLES.find((s) => s.id === state.selectedStyleId) || CARD_STYLES[0];
   const card = document.getElementById("card-render");
 
-  card.style.background = style.bg;
   card.style.color = style.text;
 
   const mensaje = getMensajeFinal() || (window.MENSAJES_PREDETERMINADOS || [])[0];
@@ -227,13 +224,16 @@ function renderCard() {
   if (de) namesHtml += `De: ${escapeHtml(de)}`;
 
   card.innerHTML = `
-    <div class="card-icon">${renderIconBadge(style, 108)}</div>
-    <div class="card-shana-tova" style="color:${style.accent === style.bg ? style.text : style.accent}">
-      Shaná Tová
+    ${renderShapeBackground(style)}
+    <div class="card-content">
+      <div class="card-icon">${style.icon}</div>
+      <div class="card-shana-tova" style="color:${style.accent === style.bg ? style.text : style.accent}">
+        Shaná Tová
+      </div>
+      <div class="card-message">${escapeHtml(mensaje)}</div>
+      ${namesHtml ? `<div class="card-names">${namesHtml}</div>` : ""}
+      <div class="card-brand">Hillel Argentina · Rosh Hashaná 5787</div>
     </div>
-    <div class="card-message">${escapeHtml(mensaje)}</div>
-    ${namesHtml ? `<div class="card-names">${namesHtml}</div>` : ""}
-    <div class="card-brand">Hillel Argentina · Rosh Hashaná 5787</div>
   `;
 }
 

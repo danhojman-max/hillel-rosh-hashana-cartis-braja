@@ -219,19 +219,12 @@ h1, h2, h3 {
 .style-option {
   border: none;
   border-radius: var(--radius);
-  aspect-ratio: 3 / 4;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+  aspect-ratio: 4 / 5;
+  position: relative;
+  overflow: hidden;
   cursor: pointer;
-  padding: 16px;
-  font-family: var(--font-title);
-  font-weight: 800;
-  text-transform: uppercase;
-  font-size: 14px;
-  text-align: center;
+  padding: 0;
+  background: var(--blanco);
   box-shadow: 0 6px 16px rgba(59, 36, 32, 0.15);
   transition: transform 0.12s ease, outline 0.12s ease;
   outline: 3px solid transparent;
@@ -245,16 +238,36 @@ h1, h2, h3 {
   outline: 3px solid var(--marron);
 }
 
-/* Placa circular con la silueta del ícono (usada en la grilla de
-   estilos y en la tarjeta final). El tamaño real se define inline
-   en JS (renderIconBadge) porque cambia según el contexto. */
-.icon-badge {
+/* Silueta de fondo (SVG a pantalla completa, detrás del contenido).
+   Usada tanto en la grilla de estilos como en la tarjeta final. */
+.card-shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.style-option-content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  flex-shrink: 0;
-  box-shadow: 0 3px 10px rgba(59, 36, 32, 0.2);
+  gap: 10px;
+  padding: 16px;
+  font-family: var(--font-title);
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 14px;
+  text-align: center;
+}
+
+.style-option .style-icon {
+  font-size: 34px;
+  line-height: 1;
 }
 
 /* ===================== PASO 3: PERSONALIZAR ===================== */
@@ -398,24 +411,35 @@ input[type="text"]:focus, textarea:focus {
 }
 
 /* La tarjeta que se exporta como imagen. Proporción tipo story/tarjeta
-   vertical, cómoda para compartir por WhatsApp en celular. */
+   vertical, cómoda para compartir por WhatsApp en celular. Fondo blanco
+   neutro: el color de cada diseño lo pone la silueta (.card-shape) de
+   atrás, no la tarjeta en sí. */
 .card-render {
   width: 100%;
   max-width: 360px;
   aspect-ratio: 4 / 5;
   border-radius: var(--radius);
   overflow: hidden;
+  background: var(--blanco);
+  box-shadow: 0 12px 30px rgba(59, 36, 32, 0.3);
+  position: relative;
+}
+
+.card-content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   padding: 32px 26px;
-  box-shadow: 0 12px 30px rgba(59, 36, 32, 0.3);
-  position: relative;
 }
 
 .card-icon {
+  font-size: 56px;
+  line-height: 1;
   margin-bottom: 16px;
   display: flex;
   justify-content: center;
