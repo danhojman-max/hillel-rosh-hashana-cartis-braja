@@ -87,9 +87,13 @@ por si querés ajustar algo después:
 
 ## Deploy
 
-- **Repo de GitHub**: creado y pusheado automáticamente.
-- **Vercel**: ver la sección "Estado del deploy" que se actualiza al pie
-  de este README, o preguntame si necesitás el link.
+- **Repo de GitHub**: https://github.com/danhojman-max/hillel-rosh-hashana-cartis-braja
+- **Sitio en producción (Vercel)**: https://hillel-rosh-hashana-cartis-braja.vercel.app
 
-Cualquier paso del deploy que haya requerido tu intervención (login, pago,
-autorización de OAuth) está documentado ahí también.
+El repo se creó y pusheó de forma automática con `gh`. Para el deploy en
+Vercel hizo falta un solo paso manual de tu parte: iniciar sesión en Vercel
+con "Continue with GitHub" (crear/loguear una cuenta es algo que no puedo
+hacer en tu nombre). Una vez logueado, la importación del repo, la
+configuración (preset "Other", sin build step) y el deploy se hicieron
+automáticamente. Cada push a la rama `main` en GitHub va a re-deployar el
+sitio solo.
