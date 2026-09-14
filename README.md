@@ -37,13 +37,33 @@ hace falta tocar el código. Si por algún motivo alguno de los dos archivos
 faltara, el sitio muestra automáticamente un placeholder de texto ("HILLEL
 ARGENTINA" / "MASA") en vez de un ícono de imagen rota.
 
+## Dónde van las siluetas de fondo de cada tarjeta
+
+Cada diseño usa como fondo un SVG con la silueta del emoji (jarra de
+miel, manzana, Maguen David, copa de vino), en vez de un rectángulo plano
+de color. Esos archivos van en `assets/shapes/`, con el nombre que pide
+`shapeId` en `CARD_STYLES` (ver abajo):
+
+- `assets/shapes/honey.svg` — Dulce Comienzo
+- `assets/shapes/apple.svg` — Renovación
+- `assets/shapes/star.svg` — Shaná Tová
+- `assets/shapes/wine.svg` — Brindis
+
+Recomendado: SVG con proporción 4:5 (igual que la tarjeta), silueta de un
+solo color sólido (sin degradé ni sombra) ocupando ~85-90% del lienzo,
+centrada, con una zona ancha y continua en el medio para que el mensaje
+se lea bien encima.
+
 ## Cómo agregar o editar un diseño de tarjeta
 
-Los 5 estilos de tarjeta están definidos en el array `CARD_STYLES` al
+Los estilos de tarjeta están definidos en el array `CARD_STYLES` al
 principio de [`app.js`](app.js). Cada uno tiene: `label` (nombre visible),
-`icon` (emoji), `bg` (color de fondo), `text` (color de texto) y `accent`
-(color del título "Shaná Tová"). Para agregar un diseño nuevo, alcanza con
-copiar un objeto del array y cambiar esos valores.
+`icon` (emoji, sin modificar), `shapeId` (qué archivo de
+`assets/shapes/` usar de fondo), `bg` (color de referencia del diseño,
+usado solo para decidir el color del título), `text` (color de texto) y
+`accent` (color del título "Shaná Tová"). Para agregar un diseño nuevo,
+alcanza con copiar un objeto del array, cambiar esos valores y subir el
+SVG correspondiente.
 
 ## Decisiones de diseño e implementación
 
@@ -67,14 +87,13 @@ por si querés ajustar algo después:
   soporta compartir archivos, se descarga la imagen automáticamente y se
   abre `wa.me` con un texto que avisa que hay que adjuntar la imagen
   descargada a mano.
-- **5 diseños de tarjeta** (dentro del rango pedido de 3 a 5): Dulce
-  Comienzo, Renovación, Shaná Tová, Paz y Bendición y Brindis. El emoji de
-  cada diseño se muestra tal cual (sin modificar), y lo que cambia es el
-  **fondo de la tarjeta**: en vez de ser un rectángulo plano de color, es
-  una silueta SVG hecha a mano con la forma del emoji (ej. la tarjeta
-  "Shaná Tová" tiene un fondo con forma de Maguen David), rellena con el
-  color sólido del diseño. Las formas están en `SHAPES` al principio de
-  `app.js`.
+- **4 diseños de tarjeta** (dentro del rango pedido de 3 a 5): Dulce
+  Comienzo, Renovación, Shaná Tová y Brindis. El emoji de cada diseño se
+  muestra tal cual (sin modificar), y lo que cambia es el **fondo de la
+  tarjeta**: en vez de ser un rectángulo plano de color, es una silueta
+  con la forma del emoji (ej. la tarjeta "Shaná Tová" tiene un fondo con
+  forma de Maguen David). Las siluetas son archivos SVG diseñados a mano
+  (no generados por código) en `assets/shapes/` — ver más abajo.
 - **Mensaje predeterminado editable**: el texto que aparece en el
   carrusel se puede retocar a mano ahí mismo (es un `<textarea>`, no un
   texto fijo) antes de pasar a la vista previa. Si se navega a otro
